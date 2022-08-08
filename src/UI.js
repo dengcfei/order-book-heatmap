@@ -64,8 +64,8 @@ export default class UI {
     if (!inputs.levels
       || typeof inputs.levels !== 'number'
       || inputs.levels < 10
-      || inputs.levels > 100) {
-      alert('Showing less than 5 price levels makes the charts hard to read');
+      || inputs.levels > 10000) {
+      alert('Showing less than 10 price levels or greater than 10000 makes the charts hard to read');
       return false;
     }
 

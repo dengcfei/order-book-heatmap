@@ -17,6 +17,8 @@ export default class Dashboard {
     this.updateInterval = updateInterval;
     this.intervals = [];
 
+    this.isPaused = false;
+
     this.heatmap = {
       // linear vs log2
       scale: scale,
@@ -43,29 +45,38 @@ export default class Dashboard {
     this.x = [];
     this.y = [];
 
+    const status = document.getElementById("status");
+
     // get recent market snapshot & rerender
     let rerenderInterval = setInterval(() => {
-      const snapshot = this.book.getSnapshot(levels + this.bufferLevels, aggregation);
+      if(status.innerHTML === "running")
+      {
+        document.querySelector('.ui')
+        const snapshot = this.book.getSnapshot(levels + this.bufferLevels, aggregation);
 
-      if (snapshot) {
-        this.updateDashboard(snapshot);
-        this.renderHeatmap();
-        this.renderTimeAndSales();
-        this.renderLimitOrdersBarChart();
-        // this.renderDepthLevels();
+        if (snapshot) {
+          this.updateDashboard(snapshot);
+          this.renderHeatmap();
+          this.renderTimeAndSales();
+          this.renderLimitOrdersBarChart();
+          // this.renderDepthLevels();
+        }
       }
     }, updateInterval);
     this.intervals.push(rerenderInterval);
 
     // recalculate order book intensity every 10 seconds
     let recalculateDepth = setInterval(() => {
-      let maxDepth = 0;
-      for (let i = 0, l = this.orderbook.length; i < l; i++) {
-        if (this.orderbook[i].value > maxDepth)
-          maxDepth = this.orderbook[i].value;
-      }
+      if(status.innerHTML === "running")
+      {
+        let maxDepth = 0;
+        for (let i = 0, l = this.orderbook.length; i < l; i++) {
+          if (this.orderbook[i].value > maxDepth)
+            maxDepth = this.orderbook[i].value;
+        }
 
-      this.maxDepth = maxDepth;
+        this.maxDepth = maxDepth;
+      }
     }, 2000);
     this.intervals.push(recalculateDepth);
   }
